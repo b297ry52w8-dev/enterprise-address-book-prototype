@@ -83,7 +83,7 @@
 
   function goBack() {
     if (window.history.length > 1) window.history.back();
-    else window.location.href = "./index.html";
+    else window.location.href = "./mobile-portal.html#apps";
   }
 
   function normalizeContact(contact) {

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="企业门户个人事务与企业通讯录 PC 端静态交互原型">
+  <title>PC 端通讯录 - 企业门户平台</title>
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true">
+    <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21h16M6 21V5l6-2v18M18 21V8l-6-2M8.5 8h1M8.5 11h1M8.5 14h1M14.5 10h1M14.5 13h1M14.5 16h1"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m7 9 5 5 5-5"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-chevrons-left" viewBox="0 0 24 24"><path d="m11 17-5-5 5-5M18 17l-5-5 5-5"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-calendar-check" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18m-13 5 2 2 5-5"/></symbol>
+    <symbol id="i-document" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.6 2.6 0 1 1 4.65 1.6c-.95.8-2.25 1.25-2.25 2.9M12 17h.01"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/></symbol>
+    <symbol id="i-org" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-4h12v4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 10v7M12 7h.01"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  </svg>
+
+  <header class="portal-header">
+    <div class="brand" aria-label="企业门户平台">
+      <span class="brand-mark"><svg><use href="#i-building"/></svg></span>
+      <span>企业门户平台</span>
+    </div>
+    <nav class="main-nav" aria-label="门户主导航">
+      <a class="active" href="#portal">门户</a>
+      <a href="#marketing">市场经营</a>
+      <a href="#engineering">工程管理</a>
+      <a href="#human-resources">人力资源</a>
+      <a href="#finance">财务管理</a>
+    </nav>
+    <div class="header-actions">
+      <button class="header-link" type="button"><svg><use href="#i-help"/></svg>帮助</button>
+      <div class="personal-affairs">
+        <button id="affairsTrigger" class="affairs-trigger" type="button" aria-haspopup="menu" aria-expanded="false">
+          个人事务 <svg><use href="#i-chevron-down"/></svg>
+        </button>
+        <div id="affairsDrawer" class="affairs-drawer" role="menu" aria-label="个人事务" hidden>
+          <button type="button" role="menuitem" data-route="mail"><svg><use href="#i-mail"/></svg><span>邮箱</span><svg class="item-arrow"><use href="#i-chevron-right"/></svg></button>
+          <button class="current" type="button" role="menuitem" data-route="contacts"><svg><use href="#i-users"/></svg><span>通讯录</span><svg class="item-arrow"><use href="#i-chevron-right"/></svg></button>
+          <button type="button" role="menuitem" data-route="todo"><svg><use href="#i-calendar-check"/></svg><span>待办</span><svg class="item-arrow"><use href="#i-chevron-right"/></svg></button>
+          <button type="button" role="menuitem" data-route="toread"><svg><use href="#i-document"/></svg><span>待阅</span><svg class="item-arrow"><use href="#i-chevron-right"/></svg></button>
+        </div>
+      </div>
+      <button class="icon-button notification-button" type="button" aria-label="通知"><svg><use href="#i-bell"/></svg><span class="notification-dot"></span></button>
+      <button class="account-button" type="button"><span class="avatar"><svg><use href="#i-user"/></svg></span><span>张三，职员</span><svg><use href="#i-chevron-down"/></svg></button>
+    </div>
+  </header>
+
+  <div class="tab-strip" aria-label="当前打开页面">
+    <button class="collapse-button" type="button" aria-label="收起侧栏"><svg><use href="#i-chevrons-left"/></svg></button>
+    <span class="tab muted">门户</span>
+    <span class="tab active">通讯录 - 全部组织 <button type="button" aria-label="关闭通讯录标签">×</button></span>
+    <span class="tab-strip-fill"></span>
+  </div>
+
+  <main class="page-shell">
+    <section class="content-panel" aria-labelledby="pageTitle">
+      <div class="page-title-row"><h1 id="pageTitle">通讯录</h1></div>
+
+      <div class="contacts-layout">
+        <aside class="organization-panel" aria-labelledby="organizationTitle">
+          <h2 id="organizationTitle">组织机构</h2>
+          <div id="organizationTree" class="organization-tree" role="tree" aria-label="组织机构树"></div>
+        </aside>
+
+        <section class="contacts-main" aria-label="通讯录查询与人员列表">
+          <form id="searchForm" class="search-form" autocomplete="off">
+            <label class="field name-field"><span>姓名</span><input id="nameInput" type="search" placeholder="请输入姓名"></label>
+            <div class="field department-field">
+              <span>部门</span>
+              <div class="select-wrap">
+                <button id="departmentTrigger" class="select-control" type="button" aria-haspopup="tree" aria-expanded="false">
+                  <span class="select-leading"><svg><use href="#i-org"/></svg><span id="departmentText" class="placeholder">请选择部门</span></span>
+                  <svg><use href="#i-chevron-down"/></svg>
+                </button>
+                <div id="departmentPopover" class="select-popover department-popover" hidden>
+                  <div id="departmentPickerTree" class="picker-tree" role="tree" aria-label="选择部门"></div>
+                </div>
+              </div>
+            </div>
+            <div class="field position-field">
+              <span>职务</span>
+              <div class="select-wrap">
+                <input id="positionInput" class="searchable-select" type="search" placeholder="请选择或输入关键词搜索职务" aria-haspopup="listbox" aria-expanded="false">
+                <svg class="select-chevron"><use href="#i-chevron-down"/></svg>
+                <div id="positionPopover" class="select-popover position-popover" role="listbox" hidden></div>
+              </div>
+            </div>
+            <div class="search-actions">
+              <button class="btn btn-primary" type="submit">查询</button>
+              <button id="resetButton" class="btn btn-secondary" type="button">重置</button>
+              <span class="action-divider" aria-hidden="true"></span>
+              <button id="exportButton" class="btn btn-outline" type="button"><svg><use href="#i-download"/></svg>导出</button>
+            </div>
+          </form>
+
+          <div id="listHeading" class="list-heading" hidden><h2>在岗人员 <span id="resultCountHeading"></span></h2></div>
+
+          <div class="table-wrap">
+            <table class="contacts-table">
+              <colgroup><col class="col-name"><col class="col-department"><col class="col-position"><col class="col-mobile"></colgroup>
+              <thead><tr><th scope="col">姓名</th><th scope="col">所属部门</th><th scope="col">职务</th><th scope="col">手机号</th></tr></thead>
+              <tbody id="contactsBody"></tbody>
+            </table>
+            <div id="tableLoading" class="table-state" hidden><span class="loading-spinner"></span>正在加载在岗人员...</div>
+            <div id="emptyState" class="table-state empty-state" hidden>未找到符合当前条件的在岗人员</div>
+          </div>
+
+          <div class="pagination-bar" aria-label="通讯录分页">
+            <div id="totalCount" class="total-count">共 0 条</div>
+            <div class="pagination-controls">
+              <label class="page-size-control"><select id="pageSizeSelect" aria-label="每页条数"><option value="20">20 条/页</option><option value="50">50 条/页</option><option value="100">100 条/页</option></select><svg><use href="#i-chevron-down"/></svg></label>
+              <button id="prevPage" class="page-button arrow" type="button" aria-label="上一页"><svg><use href="#i-chevron-right"/></svg></button>
+              <div id="pageNumbers" class="page-numbers"></div>
+              <button id="nextPage" class="page-button arrow" type="button" aria-label="下一页"><svg><use href="#i-chevron-right"/></svg></button>
+              <label class="page-jump">前往 <input id="pageJumpInput" type="number" min="1" value="1" aria-label="跳转页码"> 页</label>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div id="exportModal" class="modal-backdrop" hidden>
+    <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="exportDialogTitle" aria-describedby="exportDialogDescription">
+      <header class="dialog-header"><h2 id="exportDialogTitle">导出通讯录</h2><button id="closeExportModal" class="dialog-close" type="button" aria-label="关闭"><svg><use href="#i-close"/></svg></button></header>
+      <div class="dialog-body">
+        <span class="dialog-info"><svg><use href="#i-info"/></svg></span>
+        <div><p id="exportDialogDescription" class="dialog-question"></p><p>导出范围不受当前分页限制。</p><p>导出字段为：姓名、所属部门、职务、手机号。</p></div>
+      </div>
+      <footer class="dialog-footer"><button id="cancelExport" class="btn btn-secondary" type="button">取消</button><button id="confirmExport" class="btn btn-primary" type="button">确认导出</button></footer>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <script src="./js/app.js"></script>
+</body>
+</html>

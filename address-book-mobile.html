@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="企业通讯录移动端页面">
+  <meta name="theme-color" content="#ffffff">
+  <title>通讯录</title>
+  <link rel="stylesheet" href="./css/address-book-mobile.css">
+</head>
+<body>
+  <svg class="mobile-svg-sprite" aria-hidden="true">
+    <symbol id="m-arrow-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="m-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="m-org" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-4h12v4"/></symbol>
+    <symbol id="m-chevron-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="m-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="m-building" viewBox="0 0 24 24"><path d="M4 21h16M6 21V5l6-2v18M18 21V8l-6-2M8.5 8h1M8.5 11h1M8.5 14h1M14.5 10h1M14.5 13h1M14.5 16h1"/></symbol>
+    <symbol id="m-folder" viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/></symbol>
+    <symbol id="m-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="m-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.18 2 19.78 19.78 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.78 19.78 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.08 9.9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.33 1.84.56 2.8.69A2 2 0 0 1 22 16.9Z"/></symbol>
+    <symbol id="m-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  </svg>
+
+  <main class="mobile-app" id="mobileApp">
+    <header class="mobile-header">
+      <button id="mobileBackButton" class="mobile-header-button" type="button" aria-label="返回">
+        <svg><use href="#m-arrow-left"/></svg>
+      </button>
+      <h1>通讯录</h1>
+      <span class="mobile-header-spacer" aria-hidden="true"></span>
+    </header>
+
+    <section class="mobile-controls" aria-label="通讯录筛选">
+      <label class="mobile-search">
+        <svg><use href="#m-search"/></svg>
+        <input id="mobileSearchInput" type="search" placeholder="搜索姓名、手机号、职务" autocomplete="off">
+        <span class="sr-only">搜索姓名、手机号、职务</span>
+      </label>
+
+      <button id="mobileOrgTrigger" class="mobile-org-trigger" type="button" aria-haspopup="dialog" aria-expanded="false">
+        <span class="mobile-org-label"><svg><use href="#m-org"/></svg><strong id="mobileOrgText">组织架构（全部）</strong></span>
+        <svg class="mobile-org-arrow"><use href="#m-chevron-right"/></svg>
+      </button>
+    </section>
+
+    <section class="mobile-results" aria-live="polite">
+      <p id="mobileResultCount" class="mobile-result-count">共 0 人</p>
+      <div id="mobileLoading" class="mobile-loading"><span></span>正在加载通讯录...</div>
+      <div id="mobileContactList" class="mobile-contact-list"></div>
+      <div id="mobileEmpty" class="mobile-empty" hidden>
+        <svg><use href="#m-search"/></svg>
+        <p>暂无符合条件的人员</p>
+      </div>
+    </section>
+
+    <nav id="mobileAlphabetIndex" class="mobile-alphabet-index" aria-label="姓名首字母快速索引"></nav>
+  </main>
+
+  <div id="mobileOrgOverlay" class="mobile-sheet-overlay" hidden>
+    <section class="mobile-org-sheet" role="dialog" aria-modal="true" aria-labelledby="mobileSheetTitle">
+      <div class="mobile-sheet-handle" aria-hidden="true"></div>
+      <header class="mobile-sheet-header">
+        <h2 id="mobileSheetTitle">选择组织架构</h2>
+        <button id="mobileSheetClose" type="button" aria-label="关闭组织架构选择"><svg><use href="#m-close"/></svg></button>
+      </header>
+      <div id="mobileOrgTree" class="mobile-org-tree" role="tree" aria-label="组织架构树"></div>
+      <footer class="mobile-sheet-footer">
+        <button id="mobileOrgReset" class="mobile-sheet-button secondary" type="button">重置</button>
+        <button id="mobileOrgConfirm" class="mobile-sheet-button primary" type="button">确定</button>
+      </footer>
+    </section>
+  </div>
+
+  <script src="./js/app.js"></script>
+  <script src="./js/address-book-mobile.js"></script>
+</body>
+</html>

@@ -135,10 +135,10 @@ svg { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1
 .list-heading h2 span { color: #5d6b7e; font-size: 14px; font-weight: 400; }
 .table-wrap { position: relative; min-height: 432px; overflow: hidden; border: 1px solid var(--border-strong); border-radius: 4px; }
 .contacts-table { width: 100%; table-layout: fixed; border-collapse: collapse; }
-.contacts-table .col-name { width: 16%; }
-.contacts-table .col-department { width: 41%; }
-.contacts-table .col-position { width: 23%; }
+.contacts-table .col-name { width: 15%; }
 .contacts-table .col-mobile { width: 20%; }
+.contacts-table .col-department { width: 42%; }
+.contacts-table .col-position { width: 23%; }
 .contacts-table th, .contacts-table td { height: 28px; padding: 0 24px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); text-align: left; }
 .contacts-table th:last-child, .contacts-table td:last-child { border-right: 0; }
 .contacts-table th { height: 39px; color: #1b2638; background: var(--table-head); font-size: 15px; font-weight: 700; }

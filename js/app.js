@@ -348,7 +348,7 @@
       mobileButton.title = "点击复制手机号";
       mobileButton.addEventListener("click", () => copyMobile(contact.mobile));
       mobile.appendChild(mobileButton);
-      row.append(name, department, position, mobile);
+      row.append(name, mobile, department, position);
       dom.contactsBody.appendChild(row);
     });
     dom.emptyState.hidden = state.currentRows.length !== 0;

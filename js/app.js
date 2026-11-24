@@ -54,6 +54,7 @@
     total: 0,
     totalPages: 1,
     currentRows: [],
+    selectedContactIds: new Set(),
     loading: false
   };
 
@@ -83,6 +84,13 @@
       return positions.filter(item => !normalized || item.toLowerCase().includes(normalized));
     },
     async exportContacts(filters) {
+      if (filters.selectedIds && filters.selectedIds.length) {
+        const selectedIds = new Set(filters.selectedIds);
+        const selectedRows = generatedContacts
+          .filter(item => item.status === "在岗" && selectedIds.has(item.id))
+          .sort((a, b) => a.accountCreatedAt.localeCompare(b.accountCreatedAt));
+        return createXlsxBlob(selectedRows);
+      }
       const result = await this.queryContacts({ ...filters, pageNo: 1, pageSize: Number.MAX_SAFE_INTEGER });
       return createXlsxBlob(result.list);
     }
@@ -105,7 +113,7 @@
   }
 
   function cacheDom() {
-    ["affairsTrigger", "affairsDrawer", "organizationTree", "departmentTrigger", "departmentText", "departmentPopover", "departmentPickerTree", "positionInput", "positionPopover", "searchForm", "nameInput", "resetButton", "exportButton", "contactsBody", "tableLoading", "emptyState", "listHeading", "resultCountHeading", "totalCount", "pageSizeSelect", "prevPage", "nextPage", "pageNumbers", "pageJumpInput", "exportModal", "exportDialogDescription", "closeExportModal", "cancelExport", "confirmExport", "toast"].forEach(id => dom[id] = document.getElementById(id));
+    ["affairsTrigger", "affairsDrawer", "organizationTree", "departmentTrigger", "departmentText", "departmentPopover", "departmentPickerTree", "positionInput", "positionPopover", "searchForm", "nameInput", "resetButton", "selectedCount", "exportButton", "exportButtonLabel", "selectPageCheckbox", "contactsBody", "tableLoading", "emptyState", "listHeading", "resultCountHeading", "totalCount", "pageSizeSelect", "prevPage", "nextPage", "pageNumbers", "pageJumpInput", "exportModal", "exportDialogDescription", "closeExportModal", "cancelExport", "confirmExport", "toast"].forEach(id => dom[id] = document.getElementById(id));
   }
 
   function bindEvents() {
@@ -120,6 +128,7 @@
     });
     dom.searchForm.addEventListener("submit", handleSearch);
     dom.resetButton.addEventListener("click", resetSearch);
+    dom.selectPageCheckbox.addEventListener("change", toggleCurrentPageSelection);
     dom.exportButton.addEventListener("click", openExportModal);
     dom.closeExportModal.addEventListener("click", closeExportModal);
     dom.cancelExport.addEventListener("click", closeExportModal);
@@ -137,7 +146,9 @@
   }
 
   function applyPermissionVisibility() {
-    dom.exportButton.hidden = !USER_PERMISSIONS.includes("contact:export");
+    const canExport = USER_PERMISSIONS.includes("contact:export");
+    dom.exportButton.hidden = !canExport;
+    document.body.classList.toggle("contact-export-disabled", !canExport);
   }
 
   function toggleAffairsDrawer(force) {
@@ -233,6 +244,7 @@
   }
 
   async function selectOrganization(orgId, load = true) {
+    if (orgId !== state.selectedOrgId) clearSelection(true);
     state.selectedOrgId = orgId;
     state.pendingOrgId = orgId === "all" ? "" : orgId;
     state.pageNo = 1;
@@ -275,9 +287,13 @@
 
   async function handleSearch(event) {
     event.preventDefault();
-    state.name = dom.nameInput.value.trim();
-    state.positionKeyword = (state.selectedPosition || dom.positionInput.value).trim();
+    const nextName = dom.nameInput.value.trim();
+    const nextPositionKeyword = (state.selectedPosition || dom.positionInput.value).trim();
     const targetOrg = state.pendingOrgId || "all";
+    const filtersChanged = nextName !== state.name || nextPositionKeyword !== state.positionKeyword || targetOrg !== state.selectedOrgId;
+    if (filtersChanged) clearSelection(true);
+    state.name = nextName;
+    state.positionKeyword = nextPositionKeyword;
     state.selectedOrgId = targetOrg;
     state.pageNo = 1;
     expandAncestors(targetOrg, state.expanded);
@@ -286,6 +302,7 @@
   }
 
   async function resetSearch() {
+    clearSelection(true);
     dom.nameInput.value = "";
     dom.positionInput.value = "";
     state.name = "";
@@ -332,6 +349,16 @@
     dom.contactsBody.innerHTML = "";
     state.currentRows.forEach(contact => {
       const row = document.createElement("tr");
+      row.classList.toggle("is-selected", state.selectedContactIds.has(contact.id));
+      const selection = document.createElement("td");
+      selection.className = "selection-cell";
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "selection-checkbox";
+      checkbox.checked = state.selectedContactIds.has(contact.id);
+      checkbox.setAttribute("aria-label", `选择${contact.name}`);
+      checkbox.addEventListener("change", () => toggleContactSelection(contact.id, checkbox.checked));
+      selection.appendChild(checkbox);
       const name = createCell("name-cell", contact.name);
       const department = document.createElement("td");
       department.className = "department-cell";
@@ -348,9 +375,10 @@
       mobileButton.title = "点击复制手机号";
       mobileButton.addEventListener("click", () => copyMobile(contact.mobile));
       mobile.appendChild(mobileButton);
-      row.append(name, mobile, department, position);
+      row.append(selection, name, mobile, department, position);
       dom.contactsBody.appendChild(row);
     });
+    updateSelectionUi();
     dom.emptyState.hidden = state.currentRows.length !== 0;
     dom.listHeading.hidden = state.selectedOrgId === "all" && !state.name && !state.positionKeyword;
     dom.resultCountHeading.textContent = `（共 ${state.total} 人）`;
@@ -392,6 +420,39 @@
     state.loading = loading;
     dom.tableLoading.hidden = !loading;
     dom.searchForm.querySelectorAll("button").forEach(button => button.disabled = loading);
+    dom.selectPageCheckbox.disabled = loading || state.currentRows.length === 0;
+  }
+
+  function toggleContactSelection(contactId, selected) {
+    if (selected) state.selectedContactIds.add(contactId);
+    else state.selectedContactIds.delete(contactId);
+    renderContacts();
+  }
+
+  function toggleCurrentPageSelection(event) {
+    state.currentRows.forEach(contact => {
+      if (event.currentTarget.checked) state.selectedContactIds.add(contact.id);
+      else state.selectedContactIds.delete(contact.id);
+    });
+    renderContacts();
+  }
+
+  function updateSelectionUi() {
+    const selectedOnPage = state.currentRows.filter(contact => state.selectedContactIds.has(contact.id)).length;
+    dom.selectPageCheckbox.checked = state.currentRows.length > 0 && selectedOnPage === state.currentRows.length;
+    dom.selectPageCheckbox.indeterminate = selectedOnPage > 0 && selectedOnPage < state.currentRows.length;
+    dom.selectPageCheckbox.disabled = state.loading || state.currentRows.length === 0;
+    const count = state.selectedContactIds.size;
+    dom.selectedCount.hidden = count === 0;
+    dom.selectedCount.textContent = `已选择 ${count} 人`;
+    dom.exportButtonLabel.textContent = count > 0 ? "导出已选" : "导出";
+  }
+
+  function clearSelection(announce = false) {
+    if (!state.selectedContactIds.size) return;
+    state.selectedContactIds.clear();
+    updateSelectionUi();
+    if (announce) showToast("筛选条件已变化，已清空所选人员");
   }
 
   async function copyMobile(mobile) {
@@ -411,7 +472,10 @@
   }
 
   function openExportModal() {
-    dom.exportDialogDescription.textContent = `将导出当前筛选结果，共 ${state.total} 人，是否继续？`;
+    const selectedCount = state.selectedContactIds.size;
+    dom.exportDialogDescription.textContent = selectedCount
+      ? `将导出已选择的 ${selectedCount} 人，是否继续？`
+      : `将导出当前筛选结果，共 ${state.total} 人，是否继续？`;
     dom.exportModal.hidden = false;
     dom.confirmExport.focus();
   }
@@ -427,7 +491,8 @@
     dom.confirmExport.disabled = true;
     dom.confirmExport.textContent = "正在导出...";
     try {
-      const blob = await ContactApi.exportContacts(currentQueryParams());
+      const selectedIds = Array.from(state.selectedContactIds);
+      const blob = await ContactApi.exportContacts({ ...currentQueryParams(), selectedIds });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = `企业通讯录_${formatDate(new Date())}.xlsx`;
@@ -436,7 +501,7 @@
       link.remove();
       setTimeout(() => URL.revokeObjectURL(link.href), 1000);
       closeExportModal();
-      showToast("通讯录已导出");
+      showToast(selectedIds.length ? `已导出 ${selectedIds.length} 名所选人员` : "通讯录已导出");
     } finally {
       dom.confirmExport.disabled = false;
       dom.confirmExport.textContent = "确认导出";

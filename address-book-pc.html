@@ -102,7 +102,8 @@
               <button class="btn btn-primary" type="submit">查询</button>
               <button id="resetButton" class="btn btn-secondary" type="button">重置</button>
               <span class="action-divider" aria-hidden="true"></span>
-              <button id="exportButton" class="btn btn-outline" type="button"><svg><use href="#i-download"/></svg>导出</button>
+              <span id="selectedCount" class="selected-count" aria-live="polite" hidden></span>
+              <button id="exportButton" class="btn btn-outline" type="button"><svg><use href="#i-download"/></svg><span id="exportButtonLabel">导出</span></button>
             </div>
           </form>
 
@@ -110,8 +111,8 @@
 
           <div class="table-wrap">
             <table class="contacts-table">
-              <colgroup><col class="col-name"><col class="col-mobile"><col class="col-department"><col class="col-position"></colgroup>
-              <thead><tr><th scope="col">姓名</th><th scope="col">手机号</th><th scope="col">所属部门</th><th scope="col">职务</th></tr></thead>
+              <colgroup><col class="col-select"><col class="col-name"><col class="col-mobile"><col class="col-department"><col class="col-position"></colgroup>
+              <thead><tr><th class="selection-cell" scope="col"><input id="selectPageCheckbox" class="selection-checkbox" type="checkbox" aria-label="选择当前页全部人员"></th><th scope="col">姓名</th><th scope="col">手机号</th><th scope="col">所属部门</th><th scope="col">职务</th></tr></thead>
               <tbody id="contactsBody"></tbody>
             </table>
             <div id="tableLoading" class="table-state" hidden><span class="loading-spinner"></span>正在加载在岗人员...</div>
